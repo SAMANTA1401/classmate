@@ -5,8 +5,6 @@ langchainhub
 chromadb 
 langchain 
 langgraph  
-tavily-python
-python-dotenv
 google-generativeai
 langchain-google-genai
 langchain-groq
@@ -18,13 +16,10 @@ langchain_huggingface
 google-search-results
 faiss-cpu
 sentence_transformers
-
 ipykernel
 ipywidgets
-
 python-dotenv
 youtube_search
-
 streamlit
 duckduckgo-search
 yfinance
