@@ -28,3 +28,6 @@ pytesseract
 speechrecognition
 playsound
 gtts
+
+
+-e .
