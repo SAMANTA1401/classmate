@@ -31,3 +31,6 @@ gtts
 
 
 -e .
+
+mysql-connector-python
+matplolib
