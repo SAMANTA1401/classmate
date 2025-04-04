@@ -9,6 +9,9 @@ from src.tutorengine.prompts import ScienceBotPrompt
 from langchain_core.output_parsers import StrOutputParser
 from langchain.prompts import PromptTemplate 
 from langchain.output_parsers import  PydanticOutputParser 
+from src.logger import logging
+from src.exception import CustomException
+import sys
 
 
 
@@ -18,22 +21,26 @@ class ScienceBot:
         self.prompttemplate= ScienceBotPrompt.scienceTemplate
 
     def route(self, state):
-        messages =state["messages"]
-        context=messages[-1] # last message
-        template = self.prompttemplate  
+        logging.info("Inside ScienceBot")
+        try:
 
-        prompt = PromptTemplate(template=template,
-                                    input_variables=[context],
-                                    partial_variables={}
-                                    )
+            messages =state["messages"]
+            context=messages[-1] # last message
+            template = self.prompttemplate  
 
-        chain =  prompt | self.llm1 | StrOutputParser()
-    
-        response = chain.invoke({"context": context})
-    
-        return {"messages": [response]}
+            prompt = PromptTemplate(template=template,
+                                        input_variables=[context],
+                                        partial_variables={}
+                                        )
 
+            chain =  prompt | self.llm1 | StrOutputParser()
+        
+            response = chain.invoke({"context": context})
+        
+            return {"messages": [response]}
 
+        except Exception as e:
+            raise logging.info(CustomException(e,sys))
 
 
 
