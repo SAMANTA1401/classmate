@@ -9,28 +9,27 @@ google-generativeai
 langchain-google-genai
 langchain-groq
 langchain-nomic
-
 langchain_mistralai
-
 langchain_huggingface
 google-search-results
 faiss-cpu
-
 ipykernel
 ipywidgets
 python-dotenv
 youtube_search
 streamlit
 pillow
-
 pytesseract
-
 speechrecognition
 playsound
 gtts
-
-
--e .
-
+# -e .
 mysql-connector-python
-matplolib
+# fastapi 
+# uvicorn
+fastapi[standard]
+uvicorn[standard]
+# streamlit 
+
+# uuid # for react 
+# event-source-polyfill # for react
