@@ -24,14 +24,6 @@ os.environ["GROQ_API_KEY"]=GROQ_API_KEY
 # llm3 = ChatGoogleGenerativeAI(model="gemini-2.0-flash-lite")
 # llm4 = ChatGroq(model="llama3-8b-8192")
 
-################################
-user_name = "Shubhankar Samnata"
-age = 20
-standard_name = "class 10"
-bot_name = "classmate"
-chat_history = [f"UserMessage:my name is {user_name}, age is {age}, study in {standard_name}" f"SystemMessage: hi! I am your {bot_name}"]
-#################################
-
 
 class MasterBotRouter:
     def __init__(self, chat_history:list ):
@@ -87,3 +79,19 @@ class MasterBotRouter:
     
         except Exception as e:
             raise logging.info(CustomException(e,sys))
+
+
+
+if __name__ == "__main__":
+    ################################
+    user_name = "Shubhankar Samnata"
+    age = 20
+    standard_name = "class 10"
+    bot_name = "classmate"
+    chat_history = [f"UserMessage:my name is {user_name}, age is {age}, study in {standard_name}" f"SystemMessage: hi! I am your {bot_name}"]
+    #################################
+
+    router = MasterBotRouter(chat_history)
+    state = {"messages":["hello!"]}
+    response = router.route(state)
+    print(response)
