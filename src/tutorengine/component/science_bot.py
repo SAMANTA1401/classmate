@@ -41,6 +41,14 @@ class ScienceBot:
 
         except Exception as e:
             raise logging.info(CustomException(e,sys))
+        
+
+
+if __name__ == "__main__":
+    router = ScienceBot()
+    state = {"messages": ["hello!"]}
+    response = router.route(state)
+    print(response)
 
 
 
