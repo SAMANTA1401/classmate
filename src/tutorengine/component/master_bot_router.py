@@ -39,7 +39,7 @@ class MasterBotRouter:
             question=messages[-1] # last message
             
             chat_history_str = " "
-            chat_history_str = "\n".join(chat_history)
+            chat_history_str = "\n".join(self.chat_history)
             
             template = self.prompttemplate
             parser = PydanticOutputParser(pydantic_object=FieldSelectionParser)
@@ -72,8 +72,10 @@ class MasterBotRouter:
                 Answer=searchresults if searchresults else response.Answer
             )   
             
-            chat_history.extend([f"UserMessage:{final_response.Question_or_query}",f"SystemMessage:{final_response.Answer}"])
+            self.chat_history.extend([f"UserMessage:{final_response.Question_or_query}",f"SystemMessage:{final_response.Answer}"])
             
+            logging.info("MasterBotRouter is routing the request completed")
+
             return {"messages": [final_response]}
 
     

@@ -36,6 +36,8 @@ class ScienceBot:
             chain =  prompt | self.llm1 | StrOutputParser()
         
             response = chain.invoke({"context": context})
+
+            logging.info("Response from ScienceBot")
         
             return {"messages": [response]}
 
