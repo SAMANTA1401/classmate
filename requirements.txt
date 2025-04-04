@@ -33,3 +33,4 @@ uvicorn[standard]
 
 # uuid # for react 
 # event-source-polyfill # for react
+# react-icons

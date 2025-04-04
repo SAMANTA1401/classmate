@@ -72,7 +72,7 @@ class MasterBotRouter:
                 Answer=searchresults if searchresults else response.Answer
             )   
             
-            self.chat_history.extend([f"UserMessage:{final_response.Question_or_query}",f"SystemMessage:{final_response.Answer}"])
+            # self.chat_history.extend([f"UserMessage:{final_response.Question_or_query}",f"SystemMessage:{final_response.Answer}"])
             
             logging.info("MasterBotRouter is routing the request completed")
 
