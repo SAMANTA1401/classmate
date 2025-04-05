@@ -23,7 +23,13 @@ class FieldSelectionParser(BaseModel):
     Question_or_query: Optional[str] = Field(default=None, description='Given input question or query')
     Answer: Optional[str] = Field(default=None, description='Answer to the given question or query')
     Content: Optional[str] = Field(default=None, description='Content of the selected topic')
-    
+
+
+class ContentSelectorParser(BaseModel):
+    Answer: Optional[str] = Field(default=None, description='Answer to the given question or query')
+    Content: Optional[str] = Field(default=None, description='Content of the selected topic')
+
+
 # parser for search tools
 class SearchAnswer(BaseModel):
     extracted_result:str = Field(description="A concise answer to the user's query extracted from context")

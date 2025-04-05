@@ -74,7 +74,7 @@ class MasterSearchPrompt:
 class ScienceBotPrompt:
     scienceTemplate:str = """
         You are an AI educational assistant designed to help students by creating detailed study plans, courses, or generating exam-style questions and check answer , provide correct answer based on their input. Use the following details provided by the user to generate a response tailored to their request.
-        extract parameters from context and "Strictly ignore the Answer part from the context you have nothing to do with that" .
+        extract parameters from context and "Strictly put the answer to **Answer** parameter what you get from context the Answer part from the context you have nothing to do with that" .
         ### context: {context}
         
         ### Strictly follow latext format conversion from command to symbols to represent symbols , mathematical term or equation visually which helps to students to understand.
@@ -134,6 +134,12 @@ class ScienceBotPrompt:
         - Question Type: MCQ
         - Query: Generate exam questions
         **Output**: 10-15 multiple-choice questions with options and correct answers.
+
+        ## return your response in valid json format for pydantic output parser and follow format instruction below
+        {format_instructions}
+        **Answer**: put the answer you get from context as it is.
+        **Content**: rest of your generate content or response what you are asked to do.
+
     """
 
 
@@ -160,7 +166,7 @@ class ArtsBotPrompt:
         
         2. **If the query asks to "create questions" or "generate exam questions"** (e.g., "Create MCQs for...", "Generate descriptive questions on...", "create numerical questions on..."):
       
-
+          
     """
 
 
