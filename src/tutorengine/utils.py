@@ -22,6 +22,7 @@ class FieldSelectionParser(BaseModel):
     Difficulty_level: Optional[str] = Field(default=None, description='Selected difficulty level')
     Question_or_query: Optional[str] = Field(default=None, description='Given input question or query')
     Answer: Optional[str] = Field(default=None, description='Answer to the given question or query')
+    Content: Optional[str] = Field(default=None, description='Content of the selected topic')
     
 # parser for search tools
 class SearchAnswer(BaseModel):

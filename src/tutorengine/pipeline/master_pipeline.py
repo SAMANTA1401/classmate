@@ -17,11 +17,13 @@ class MasterPipeline:
         self.chat_history = chat_history
 
     def router(self,state):
-        logging.info("Router")
+        logging.info("Router initiate")
         try:
             messages = state["messages"]
             last_message = messages[-1]
-            if "Field_study=Science" in last_message:
+            if last_message.Field_study == 'science':
+            # if "Field_study='science'" in last_message:
+                logging.info("Router is routing to science bot")
                 return "Science"
             else:
                 return "end"

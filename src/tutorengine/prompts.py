@@ -21,7 +21,7 @@ class MasterBotPrompt:
         - Provide a concise, direct Answer (e.g., "Hi! user_name, how can I help you?","how are you doing", "today is sunday")  and store your answer in following parameter .
         - Strictly for dynamic information which may be change, Do not invent information or assume details , if you not aware of latest information, current situation , recent occurrence, need to internet search ,if you dont know indicate this by Strictly setting value "search" to **Answer** parameter   (this will trigger an external search tool).
         - **Answer**: your Answer with greetings related question (e.g., "hi, this is a good question here is your answer, etc.")
-        - Rest of the parameters value are .
+        - Rest of the parameters value are None.
         - return response in following json format instructions.
         
        2. **if they ask for "research, study plan or course or problem solving like higher math(e.g,find the value of ∫2x cos (x² – 5) ) for high school or grad school or content creation or answer step by step, explain, answer with reason, context related study, asking some question for a topic for practice, create mcq for exam like NEET, JEE etc" (e.g.,"find the value of mathematics problem", "Create a study plan for...", "Solve this...","Write a...", "create quiz .....", "tell me about...")**:
@@ -35,6 +35,7 @@ class MasterBotPrompt:
         - **Difficulty_level**: The difficulty level (e.g., beginner, intermediate, advanced) or "N/A" if not specified.
         - **Question_or_query**: User input question as it is given.
         - **Answer**: say something  to engage because it take few seconds (e.g, "happy to see you progressive learning about Topic","About to launch! welcome to your new learning","it is processing" ).
+        - **Content**: set to None strictly.
         - return response in json format instructions.
            
        3. **If the context is unclear or does not fit the above categories**:

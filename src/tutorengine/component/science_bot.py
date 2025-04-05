@@ -12,7 +12,7 @@ from langchain.output_parsers import  PydanticOutputParser
 from src.logger import logging
 from src.exception import CustomException
 import sys
-
+from src.tutorengine.utils import FieldSelectionParser
 
 
 class ScienceBot:
@@ -36,10 +36,22 @@ class ScienceBot:
             chain =  prompt | self.llm1 | StrOutputParser()
         
             response = chain.invoke({"context": context})
+            print("response", response)
 
             logging.info("Response from ScienceBot")
+
+            final_response = FieldSelectionParser(
+                Field_study=messages[0].Field_study,
+                Subject=messages[0].Subject,
+                Chapter=messages[0].Chapter,
+                Topic=messages[0].Topic,
+                Difficulty_level=messages[0].Difficulty_level,
+                Question_or_query=messages[0].Question_or_query,
+                Answer=messages[0].Answer,
+                Content = response
+            )  
         
-            return {"messages": [response]}
+            return {"messages": [final_response]}
 
         except Exception as e:
             raise logging.info(CustomException(e,sys))

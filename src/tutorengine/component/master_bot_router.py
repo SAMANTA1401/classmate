@@ -75,7 +75,8 @@ class MasterBotRouter:
                 Topic=response.Topic,
                 Difficulty_level=response.Difficulty_level,
                 Question_or_query=response.Question_or_query,
-                Answer=searchresults if searchresults else response.Answer
+                Answer=searchresults if searchresults else response.Answer,
+                Content = response.Content
             )   
             
             # self.chat_history.extend([f"UserMessage:{final_response.Question_or_query}",f"SystemMessage:{final_response.Answer}"])

@@ -37,15 +37,22 @@ def chat():
                         print(value)
                         chat_history.extend([f"UserMessage:{value['messages'][0].Question_or_query}",f"SystemMessage:{value['messages'][0].Answer}"])
                         print("chat_history",chat_history)
-                        answer_value = value['messages'][0].Answer 
+                        answer_value = value['messages'][0].Answer
+                        content_value = value['messages'][0].Content 
                         print("answer_value", answer_value)
-                        response_chunk = str(answer_value)
-                        # yield f"data: {response_chunk}\n\n"
-                        
-    
- 
-
+                        print("content_value", content_value)
+                        if content_value:
+                            response_chunk = {"answer": answer_value, "content": content_value}
+                        else:
+                            response_chunk = {"answer": answer_value, "content": None}
+                        # yield f"data: {response_chunk}\n\n"       
         return str(response_chunk)
+
+
+# @app.route("/get", methods = ["POST", "GET"])
+# def playboard():
+#      if request.method
+
 
 if __name__ == '__main__':
     

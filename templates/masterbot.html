@@ -32,13 +32,13 @@
 								</div>
 							</div>
 						</div>
-						<div id="messageFormeight" class="card-body msg_card_body">
+						<div id="content" class="card-body msg_card_body">
 							
 							
 						</div>
 						<div class="card-footer">
-							<form id="messageArea" class="input-group">
-                                <input type="text" id="text" name="" placeholder="Type your message..." autocomplete="off" class="form-control type_msg" required/>
+							<form id="" class="input-group">
+                                <input type="text" id="" name="" placeholder="Type your message..." autocomplete="off" class="form-control type_msg" required/>
 								<div class="input-group-append">
 									<button type="submit" id="send" class="input-group-text send_btn"><i class="fas fa-location-arrow"></i></button>
 								</div>
@@ -102,8 +102,23 @@
 						type: "POST",
 						url: "/get",
 					}).done(function(data) {
-						var botHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="static/logo.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + data + '<span class="msg_time">' + str_time + '</span></div></div>';
-						$("#messageFormeight").append($.parseHTML(botHtml));
+						// Assuming str_time is defined somewhere above this code block
+						// e.g., var str_time = new Date().toLocaleTimeString(); 
+
+						// Always construct the masterHtml
+						var masterHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="static/logo.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + data["answer_value"] + '<span class="msg_time">' + str_time + '</span></div></div>';
+
+						// Check if data["content_value"] is null or undefined
+						if (data["content_value"] == null) { 
+							// If content_value is null or undefined, only append masterHtml
+							$("#messageFormeight").append($.parseHTML(masterHtml));
+						} else {
+							// If content_value has a value, construct scienceHtml and append both
+							var scienceHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="static/logo.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + data["content_value"] + '<span class="msg_time">' + str_time + '</span></div></div>';
+							
+							$("#messageFormeight").append($.parseHTML(masterHtml));
+							$("#content").append($.parseHTML(scienceHtml));
+						}
 					});
 					event.preventDefault();
 				});
