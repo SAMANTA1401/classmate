@@ -24,7 +24,9 @@ speechrecognition
 playsound
 gtts
 # -e .
-mysql-connector-python
+mysql-connector-python 
+flask 
+
 # fastapi 
 # uvicorn
 fastapi[standard]

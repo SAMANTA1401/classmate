@@ -14,12 +14,12 @@ from dotenv import load_dotenv
 import sys
 load_dotenv()
 
-# GOOGLE_API_KEY=os.getenv("GEMINI_API_KEY")
-# os.environ["GOOGLE_API_KEY"]=GOOGLE_API_KEY
-GROQ_API_KEY=os.getenv("GROQ_API_KEY")
-os.environ["GROQ_API_KEY"]=GROQ_API_KEY
+GOOGLE_API_KEY=os.getenv("GEMINI_API_KEY")
+os.environ["GOOGLE_API_KEY"]=GOOGLE_API_KEY
+# GROQ_API_KEY=os.getenv("GROQ_API_KEY")
+# os.environ["GROQ_API_KEY"]=GROQ_API_KEY
 
-# llm1 = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+llm1 = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 # llm2 = ChatGroq(model="gemma2-9b-it")
 # llm3 = ChatGoogleGenerativeAI(model="gemini-2.0-flash-lite")
 # llm4 = ChatGroq(model="llama3-8b-8192")
@@ -27,7 +27,8 @@ os.environ["GROQ_API_KEY"]=GROQ_API_KEY
 
 class MasterBotRouter:
     def __init__(self, chat_history:list ):
-        self.llm4 = ChatGroq(model="llama3-8b-8192")
+        # self.llm4 = ChatGroq(model="llama3-8b-8192")
+        self.llm4 = llm1
         self.chat_history = chat_history
         self.prompttemplate= MasterBotPrompt.masterTemplate
 
@@ -42,6 +43,7 @@ class MasterBotRouter:
             chat_history_str = "\n".join(self.chat_history)
             
             template = self.prompttemplate
+            
             parser = PydanticOutputParser(pydantic_object=FieldSelectionParser)
             
             prompt = PromptTemplate(template=template,
@@ -53,14 +55,18 @@ class MasterBotRouter:
             chain =  prompt | self.llm4 | parser
             
             response = chain.invoke({"chat_history":chat_history_str,"question":question,"format_instructions" : parser.get_format_instructions() })
-        
+            # print(response)
             searchresults = None
-        
-            if response.Answer == "I’m not aware, search needed":
-                search = SearchToolMasterBot.master_search(question=str(question))
-                searchresults = f"Hi, I looked it up and what I found: {search.extracted_result}"
-                # Update the response with search result
-
+            question = response.Question_or_query
+            # print("que",question)    
+            if response.Answer == "search":
+                print("ans",response.Answer)
+                try:
+                    search = SearchToolMasterBot.master_search(self,query=str(question))
+                    searchresults = f"Hi, I looked it up and what I found: {search.extracted_result}"
+                    # Update the response with search result
+                except Exception as e:
+                    raise logging.info(CustomException(e, sys))
             # Update response based on whether search was performed
             final_response = FieldSelectionParser(
                 Field_study=response.Field_study,
@@ -94,6 +100,6 @@ if __name__ == "__main__":
     #################################
 
     router = MasterBotRouter(chat_history)
-    state = {"messages":["hello!"]}
+    state = {"messages":[" intregrate sinx step by step ?"]}
     response = router.route(state)
     print(response)
