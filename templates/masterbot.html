@@ -101,24 +101,38 @@
 						},
 						type: "POST",
 						url: "/get",
-					}).done(function(data) {
+					}).done(function(JSON.stringify(data)) {
+						console.log(data)
+						if (data.answer === 'undefined') {
+							console.error("Invalid data received:", data);
+							// Maybe display an error message to the user
+							return; // Stop processing if data is invalid
+						}
 						// Assuming str_time is defined somewhere above this code block
 						// e.g., var str_time = new Date().toLocaleTimeString(); 
 
-						// Always construct the masterHtml
-						var masterHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="static/logo.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + data["answer_value"] + '<span class="msg_time">' + str_time + '</span></div></div>';
+						
 
 						// Check if data["content_value"] is null or undefined
-						if (data["content_value"] == null) { 
+						if (data.content == null) { 
+							// Always construct the masterHtml
+						    var masterHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="static/logo.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + data.answer+ '<span class="msg_time">' + str_time + '</span></div></div>';
 							// If content_value is null or undefined, only append masterHtml
 							$("#messageFormeight").append($.parseHTML(masterHtml));
 						} else {
 							// If content_value has a value, construct scienceHtml and append both
-							var scienceHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="static/logo.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + data["content_value"] + '<span class="msg_time">' + str_time + '</span></div></div>';
+							var scienceHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="static/logo.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + data.content + '<span class="msg_time">' + str_time + '</span></div></div>';
 							
 							$("#messageFormeight").append($.parseHTML(masterHtml));
 							$("#content").append($.parseHTML(scienceHtml));
 						}
+					})
+					.fail(function(jqXHR, textStatus, errorThrown) {
+						console.error("AJAX request failed!");
+						console.error("Status: ", textStatus);
+						console.error("Error: ", errorThrown);
+						console.error("Response Text:", jqXHR.responseText); 
+						// Display an error message to the user if appropriate
 					});
 					event.preventDefault();
 				});

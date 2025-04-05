@@ -26,6 +26,7 @@ class FieldSelectionParser(BaseModel):
 
 
 class ContentSelectorParser(BaseModel):
+    Question_or_query: Optional[str] = Field(default=None, description='Given input question or query')
     Answer: Optional[str] = Field(default=None, description='Answer to the given question or query')
     Content: Optional[str] = Field(default=None, description='Content of the selected topic')
 

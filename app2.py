@@ -4,8 +4,9 @@ from src.exception import CustomException
 from IPython.display import display, Markdown
 from src.tutorengine.pipeline.master_pipeline import MasterPipeline 
 from src.tutorengine.utils import FieldSelectionParser 
+from src.tutorengine.utils import ContentSelectorParser
 from pydantic import BaseModel
-
+import json
 
 app = Flask(__name__)
 
@@ -31,22 +32,28 @@ def chat():
 
 
         for output in workflow.stream(inputs):
-                    for key, value in output.items():
-                        # Assuming value is the response content we want to stream
-                        print(key)
-                        print(value)
-                        chat_history.extend([f"UserMessage:{value['messages'][0].Question_or_query}",f"SystemMessage:{value['messages'][0].Answer}"])
-                        print("chat_history",chat_history)
-                        answer_value = value['messages'][0].Answer
-                        content_value = value['messages'][0].Content 
-                        print("answer_value", answer_value)
-                        print("content_value", content_value)
-                        if content_value:
-                            response_chunk = {"answer": answer_value, "content": content_value}
-                        else:
-                            response_chunk = {"answer": answer_value, "content": None}
-                        # yield f"data: {response_chunk}\n\n"       
-        return str(response_chunk)
+            for key, value in output.items():
+                # Assuming value is the response content we want to stream
+                print(key)
+                # print(value)
+                chat_history.extend([f"UserMessage:{value['messages'][0].Question_or_query}",f"SystemMessage:{value['messages'][0].Answer}"])
+                # print("chat_history",chat_history)
+                answer_value = value['messages'][0].Answer
+                content_value = value['messages'][0].Content 
+                # print("answer_value", answer_value)
+                # print("content_value", content_value)
+                if content_value:
+                    response_chunk = {"answer": answer_value, "content": content_value}
+                    print(response_chunk)
+                else:
+                    response_chunk = {"answer": answer_value, "content": None}
+                    print(response_chunk)
+
+                # Instead of str(), use json.dumps() to create a JSON string
+                json_output = json.dumps(response_chunk)
+                print("JSON Output:", json_output) # Debugging - This is what JS will receive
+                # yield f"data: {response_chunk}\n\n"       
+        return  json_output
 
 
 # @app.route("/get", methods = ["POST", "GET"])

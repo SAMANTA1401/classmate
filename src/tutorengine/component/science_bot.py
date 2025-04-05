@@ -25,8 +25,8 @@ class ScienceBot:
         logging.info("Inside ScienceBot")
         try:
             logging.info("state",state)
-            print("state", state)
-            print("state field", state["messages"][0].Field_study)
+            # print("state", state)
+            # print("state field", state["messages"][0].Field_study)
             messages =state["messages"]
             context=messages[-1] # last message
             template = self.prompttemplate  
@@ -38,16 +38,17 @@ class ScienceBot:
 
             chain =  prompt | self.llm1 | parser3
         
-            response = chain.invoke({"context": context})
-            print("response", response)
+            response = chain.invoke({"context":context ,  "format_instructions": parser3.get_format_instructions() })
+            # print("response", response)
 
             logging.info("Response from ScienceBot")
 
-            logging.info("field study",state["messages"][0].Field_study)
+            # logging.info("field study",state["messages"][0].Field_study)
 
             
 
             final_response = ContentSelectorParser(
+                Question_or_query=context.Question_or_query,
                 Answer=response.Answer,
                 Content = response.Content
             )  

@@ -24,7 +24,7 @@ class MasterBotPrompt:
         - Rest of the parameters value are None.
         - return response in following json format instructions.
         
-       2. **if they ask for "research, study plan or course or problem solving like higher math(e.g,find the value of ∫2x cos (x² – 5) ) for high school or grad school or content creation or answer step by step, explain, answer with reason, context related study, asking some question for a topic for practice, create mcq for exam like NEET, JEE etc" (e.g.,"find the value of mathematics problem", "Create a study plan for...", "Solve this...","Write a...", "create quiz .....", "tell me about...")**:
+       2. **if they ask for "research, study plan or course or problem solving like higher math(e.g,find the value of ∫2x cos (x² – 5) )  or content creation or answer step by step, explain, answer with reason, context related study, asking some question for a topic for practice, create mcq for exam like NEET, JEE etc" (e.g.,"find the value of mathematics problem", "Create a study plan for...", "Solve this...","Write a...", "create quiz .....", "tell me about...")**:
         - always starting with greetings (e.g., "that is great", etc.")
         - extract specific fields from student input without providing answers or additional content.
         - When given a question or request, identify and extract the following parameters (if present): 
@@ -77,6 +77,7 @@ class ScienceBotPrompt:
         extract parameters from context and "Strictly put the answer to **Answer** parameter what you get from context the Answer part from the context you have nothing to do with that" .
         ### context: {context}
         
+        ## Strictly return your response in valid json format for pydantic output parser and follow format instruction below
         ### Strictly follow latext format conversion from command to symbols to represent symbols , mathematical term or equation visually which helps to students to understand.
         ### Strictly dont do any websearch .
         ### Strictly do not use short form or two words or contraction like ( That's  , arnt' , It's , don't etc. )  instead use ( That is , are not , it is , do not etc)
@@ -135,8 +136,9 @@ class ScienceBotPrompt:
         - Query: Generate exam questions
         **Output**: 10-15 multiple-choice questions with options and correct answers.
 
-        ## return your response in valid json format for pydantic output parser and follow format instruction below
+        
         {format_instructions}
+        **Question_or_query**: put the question or query from context as it is.
         **Answer**: put the answer you get from context as it is.
         **Content**: rest of your generate content or response what you are asked to do.
 
@@ -166,7 +168,7 @@ class ArtsBotPrompt:
         
         2. **If the query asks to "create questions" or "generate exam questions"** (e.g., "Create MCQs for...", "Generate descriptive questions on...", "create numerical questions on..."):
       
-          
+   
     """
 
 
