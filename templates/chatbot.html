@@ -134,7 +134,7 @@
                                 // **Important**: How should content be displayed? 
                                 // As raw text? Rendered Markdown? Needs clarification.
                                 // For now, appending as raw text/HTML:
-                                const scienceHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="static/logo.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + renderedHtml + '<span class="msg_time">' + messageTime + '</span></div></div>';
+                                const scienceHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="static/logo.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + renderedHtml + '<span class="msg_time">' + messageTime + '</span></div><button type="button" class="btn btn-success add-to-library-btn">Add to Library</button></div></div>';
                                 // Append to the #content div (PlayBoard)
                                 $("#content").append($.parseHTML(scienceHtml)); 
                                 scrollToBottom('content');
@@ -191,6 +191,48 @@
                  // Initial scroll if there's existing content (e.g. loaded from history)
                  scrollToBottom('messageFormeight');
                  scrollToBottom('content');
+
+                $('#content').on('click', '.add-to-library-btn', function() {
+                    const button = $(this); // The specific button that was clicked
+
+                    // Prevent multiple clicks while processing
+                    if (button.prop('disabled')) {
+                        return;
+                    }
+                    button.prop('disabled', true);
+                    button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...'); // Optional: Loading state
+                    
+                    // Make AJAX call to the Flask endpoint
+                    $.ajax({
+                        url: '/add_to_library', // Your Flask endpoint URL
+                        type: 'POST',
+                        contentType: 'application/json', // Sending JSON data
+                        data: JSON.stringify({
+                        //content_id: contentIdToSave
+                        //    subject_name: subject,
+                        //    chapter_name: chapter,
+                        //    topic_name: topic,
+                        //    content_text: content 
+                        }),
+                        success: function(response) {
+                            console.log("Server response:", response);
+                            if (response.success) {
+                                button.removeClass('btn-success').addClass('btn-secondary');
+                                button.text('Saved to Library');
+                            } else {
+                                alert('Error saving to library: ' + response.message);
+                                button.prop('disabled', false);
+                                button.html('Add to Library');
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            console.error("AJAX Error:", textStatus, errorThrown, jqXHR.responseText);
+                            alert('Failed to communicate with the server. Please try again.');
+                            button.prop('disabled', false);
+                            button.html('Add to Library');
+                        }
+                    });
+                });
 
             }); // End of document ready
         </script>

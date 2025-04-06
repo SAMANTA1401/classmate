@@ -4,8 +4,13 @@ from mysql.connector import Error
 
 
 class LibraryDatabase:
-    def __init__(self, db_config, user_id):
-        self.db_config = db_config
+    def __init__(self, user_id):
+        self.db_config = {
+        'host': 'localhost',
+        'database': 'tutorengine',
+        'user': 'root',
+        'password': 'mYsql@2022'
+    }
         self.cnx = None
         self.cursor = None
         self.user_id = user_id

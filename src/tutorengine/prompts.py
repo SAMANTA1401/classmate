@@ -29,10 +29,10 @@ class MasterBotPrompt:
         - extract specific fields from student input without providing answers or additional content.
         - When given a question or request, identify and extract the following parameters (if present): 
         - **Field_study**: Whether the topic is related to science or arts (e.g., science or arts), this field is mandatory must give value science or arts related to question.
-        - **Subject**: The general subject area (e.g., mathematics, history, English).
-        - *Chapter**: The specific chapter area (e.g., photosynthesis, calculus, mechanics)
-        - **Topic**: The specific topic within the subject (e.g., integration, kelvin cycle, gravitation).
-        - **Difficulty_level**: The difficulty level (e.g., beginner, intermediate, advanced) or "N/A" if not specified.
+        - **Subject**: The general subject area (e.g., mathematics, history, English) this field is mandatory must give value or related subject.
+        - *Chapter**: The specific chapter area (e.g., photosynthesis, calculus, mechanics) this field is mandatory must give value or related chapter.
+        - **Topic**: The specific topic within the subject (e.g., integration, kelvin cycle, gravitation) this field is mandatory must give value or related topic.
+        - **Difficulty_level**: The difficulty level (e.g., beginner, intermediate, advanced) .
         - **Question_or_query**: User input question as it is given.
         - **Answer**: say something  to engage because it take few seconds (e.g, "happy to see you progressive learning about Topic","About to launch! welcome to your new learning","it is processing" ).
         - **Content**: set to None strictly.

@@ -11,13 +11,32 @@ from src.tutorengine.pipeline.master_pipeline import MasterPipeline
 # from src.tutorengine.utils import ContentSelectorParser
 # Assuming BaseModel is not needed for this route logic
 # from pydantic import BaseModel 
+# from src.tutorengine.daatabase.db_config import DBConfig
+from src.tutorengine.daatabase.database_library import LibraryDatabase
+import uuid 
+from flask import session
+
 
 app = Flask(__name__)
 
 # --- Global or Session-based Chat History (Example) ---
 # You'll need a better way to manage history per user session in a real app
 # For simplicity, using a global dict keyed by a session_id (if available) or default
-chat_histories = {} 
+chat_histories = {}
+
+library = {
+
+    "user_id":1,
+    "subject":None,
+    "chapter":None,
+    "topic":None,
+    "content":None
+}
+
+# Generate a unique ID for this piece of content
+content_session_id = f"content_{uuid.uuid4().hex}"
+# session[content_session_id] = "asdfgsdag"
+
 DEFAULT_SESSION_ID = "default_user"
 # ----------------------------------------------------
 
@@ -93,8 +112,29 @@ def chat_stream():
                                 content_value = message_data.get('Content')
                                 user_query = message_data.get('Question_or_query', prompt) # Fallback query
                             else:
-                                continue # Skip if expected structure not found in this value
+                                continue # Skip if expected structure not found in this 
+                            
+                            print("message_data",message_data)
 
+                            if hasattr(message_data, 'Subject') and hasattr(message_data, 'Chapter'):
+                                library["subject"] = message_data.Subject
+                                library["chapter"] = message_data.Chapter
+                                library["topic"] = message_data.Topic
+                            elif isinstance(message_data, dict) and 'Subject' in message_data and 'Chapter' in message_data:
+                                library["subject"] = message_data.get('Subject')
+                                library["chapter"] = message_data.get('Chapter')
+                                library["topic"] = message_data.get('Topic')
+                            else:
+                                logging.info("Subject or Chapter not found in message_data.") # Skip if expected structure not found in this value
+                            
+                            if hasattr(message_data, 'Content'):
+                                library["content"] = message_data.Content
+                            elif isinstance(message_data, dict) and 'Content' in message_data:
+                                library["content"] = message_data.get('Content')
+                            else:
+                                logging.info("Content not found in message_data.") # Skip if expected structure not found in this value
+
+                            print("lilbrary",library)
                             # --- Update Chat History (per chunk) ---
                             # Be cautious with frequent updates if history gets very large
                             current_chat_history.extend([
@@ -127,6 +167,7 @@ def chat_stream():
                     yield sse_message
                     # time.sleep(0.1) # Optional small delay for demonstration
 
+            
             # --- Signal stream end (Optional but recommended) ---
             yield f"event: end-stream\ndata: {json.dumps({'message': 'Stream finished'})}\n\n"
             print("Stream finished.")
@@ -148,6 +189,27 @@ def chat_stream():
 
 # Remove the old '/get' POST route if it's no longer needed
 # Remove the commented out '/playboard' route unless you implement it
+
+
+@app.route('/add_to_library', methods=['POST']) 
+def add_to_library_route():
+    # Initialize the LibraryDatabase with the configuration
+    # db_config = DBConfig.db_config
+    library_database = LibraryDatabase(1)
+    # Add the content to the library
+    success, message = library_database.add_learning_content(
+        library["subject"],
+        library["chapter"],
+        library["topic"],
+        library["content"]
+    )
+    # Render the playboard template
+    # 4. Send Response
+    
+    return jsonify({"success": success, "message": message}) # Send back the message from the method
+    
+
+
 
 if __name__ == '__main__':
     # Use a suitable WSGI server for production (like gunicorn or uwsgi)
