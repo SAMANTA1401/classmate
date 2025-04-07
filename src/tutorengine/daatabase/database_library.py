@@ -20,6 +20,7 @@ class LibraryDatabase:
             self.cnx = mysql.connector.connect(**self.db_config)
             self.cursor = self.cnx.cursor()
             print("Connected to the database.")
+            return self.cursor
         except Error as e:
             print(f"Error connecting to the database: {e}")
 

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>📚 User Library</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .item {
+      cursor: pointer;
+      margin: 4px 0;
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+    .nested {
+      margin-left: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+    .content-line {
+      color: gray;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <h2>📚 User Library</h2>
+  <div id="library"></div>
+
+  <script>
+    const userId = 1; // Example user
+    const baseURL = "http://localhost:5000";
+
+    async function fetchJSON(url) {
+      const res = await fetch(url);
+      return await res.json();
+    }
+
+    async function loadLibrary() {
+      const subjects = await fetchJSON(`${baseURL}/subjects/${userId}`);
+      const libDiv = document.getElementById("library");
+      libDiv.innerHTML = "";
+
+      subjects.forEach(subject => {
+        const subjectDiv = createToggleItem(subject.subject_name, async () => {
+          const chapters = await fetchJSON(`${baseURL}/chapters/${subject.subject_id}`);
+          return renderList(chapters, chap => chap.chapter_name, async (chapter) => {
+            const topics = await fetchJSON(`${baseURL}/topics/${chapter.chapter_id}`);
+            return renderList(topics, top => top.topic_name, async (topic) => {
+              const content = await fetchJSON(`${baseURL}/content/${topic.topic_id}`);
+              return renderContent(content.content_text);
+            }, "nested");
+          }, "nested");
+        });
+        libDiv.appendChild(subjectDiv);
+      });
+    }
+
+    function createToggleItem(label, loadChildrenFn) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "item";
+      wrapper.textContent = label;
+
+      let loaded = false;
+      let nestedDiv;
+
+      wrapper.onclick = async (e) => {
+        e.stopPropagation(); // prevent bubbling
+
+        if (!loaded) {
+          nestedDiv = await loadChildrenFn();
+          wrapper.appendChild(nestedDiv);
+          loaded = true;
+        } else {
+          nestedDiv.classList.toggle("hidden");
+        }
+      };
+
+      return wrapper;
+    }
+
+    function renderList(items, getLabel, onClick, className = "") {
+      const container = document.createElement("div");
+      container.className = className;
+
+      items.forEach(item => {
+        const itemDiv = createToggleItem(getLabel(item), async () => {
+          return await onClick(item);
+        });
+        container.appendChild(itemDiv);
+      });
+
+      return container;
+    }
+
+    function renderContent(fullText) {
+      const preview = document.createElement("div");
+      preview.className = "item content-line nested";
+
+      const shortText = fullText.length > 60 ? fullText.slice(0, 60) + "..." : fullText;
+      let showingFull = false;
+
+      preview.textContent = shortText;
+
+      preview.onclick = (e) => {
+        e.stopPropagation();
+        showingFull = !showingFull;
+        preview.textContent = showingFull ? fullText : shortText;
+      };
+
+      return preview;
+    }
+
+    loadLibrary();
+  </script>
+</body>
+</html>

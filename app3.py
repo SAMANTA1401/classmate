@@ -15,10 +15,11 @@ from src.tutorengine.pipeline.master_pipeline import MasterPipeline
 from src.tutorengine.daatabase.database_library import LibraryDatabase
 import uuid 
 from flask import session
-
+import mysql.connector
+from flask_cors import CORS
 
 app = Flask(__name__)
-
+CORS(app)
 # --- Global or Session-based Chat History (Example) ---
 # You'll need a better way to manage history per user session in a real app
 # For simplicity, using a global dict keyed by a session_id (if available) or default
@@ -207,8 +208,61 @@ def add_to_library_route():
     # 4. Send Response
     
     return jsonify({"success": success, "message": message}) # Send back the message from the method
-    
 
+@app.route('/library')
+def library():
+    return render_template('library.html')
+
+
+@app.route('/go-to-library')
+def go_to_library():
+    # Logic to determine the library URL (e.g., based on user, etc.)
+    library_url = '/library'
+    return jsonify({'redirect_url': library_url})
+
+db = mysql.connector.connect(
+        host='localhost',
+        database='tutorengine',
+        user='root',
+        password='mYsql@2022'
+        )
+
+
+@app.route('/subjects/<int:user_id>')
+def get_subjects(user_id):
+    # cursor = LibraryDatabase(1).connect()
+    cursor = db.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM subjects WHERE user_id = %s", (user_id,))
+    subjects = cursor.fetchall()
+    cursor.close()
+    return jsonify(subjects)
+
+@app.route('/chapters/<int:subject_id>')
+def get_chapters(subject_id):
+    cursor = db.cursor(dictionary=True)
+    # cursor = LibraryDatabase.connect()
+    cursor.execute("SELECT * FROM Chapters WHERE subject_id = %s", (subject_id,))
+    chapters = cursor.fetchall()
+    cursor.close()
+    return jsonify(chapters)
+
+@app.route('/topics/<int:chapter_id>')
+def get_topics(chapter_id):
+    cursor = db.cursor(dictionary=True)
+    # cursor = LibraryDatabase.connect()
+    cursor.execute("SELECT * FROM Topics WHERE chapter_id = %s", (chapter_id,))
+    topics = cursor.fetchall()
+    cursor.close()
+    return jsonify(topics)
+
+@app.route('/content/<int:topic_id>')
+def get_content(topic_id):
+    cursor = db.cursor(dictionary=True)
+    # cursor = LibraryDatabase.connect()
+    cursor.execute("SELECT * FROM Contents WHERE topic_id = %s", (topic_id,))
+    result = cursor.fetchone()
+    cursor.close()
+    return jsonify(result if result else {"content_text": "No content available"})
 
 
 if __name__ == '__main__':

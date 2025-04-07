@@ -26,7 +26,7 @@ gtts
 # -e .
 mysql-connector-python 
 flask 
-
+flask-cors
 # fastapi 
 # uvicorn
 fastapi[standard]

@@ -14,7 +14,7 @@
             <div class="row justify-content-left h-100">
                 <div class="col-md-8 col-xl-6 chat">
                     <div class="card">
-                        <div class="card-header msg_head">
+                        <div class="card-header msg_head ">
                             <div class="d-flex bd-highlight">
                                 <div class="img_cont">
                                     <img src="static/logo.png" class="rounded-circle user_img">
@@ -24,6 +24,8 @@
                                     <span>PlayBoard</span>
                                     <p></p>
                                 </div>
+                                <div id="library"><button type="button" class="btn btn-success go-to-library-btn">
+                                 Go to Library</button></div>
                             </div>
                         </div>
                         <div id="content" class="card-body msg_card_body">
@@ -134,7 +136,7 @@
                                 // **Important**: How should content be displayed? 
                                 // As raw text? Rendered Markdown? Needs clarification.
                                 // For now, appending as raw text/HTML:
-                                const scienceHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="static/logo.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + renderedHtml + '<span class="msg_time">' + messageTime + '</span></div><button type="button" class="btn btn-success add-to-library-btn">Add to Library</button></div></div>';
+                                const scienceHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="static/logo.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">' + renderedHtml + '<span class="msg_time">' + messageTime + '</span></div><div><button type="button" class="btn btn-success add-to-library-btn">Add to Library</button></div></div>';
                                 // Append to the #content div (PlayBoard)
                                 $("#content").append($.parseHTML(scienceHtml)); 
                                 scrollToBottom('content');
@@ -232,6 +234,38 @@
                             button.html('Add to Library');
                         }
                     });
+                });
+
+
+
+                $('#library').on('click','.go-to-library-btn', function(){
+                    const button = $(this);
+
+                    $.ajax({
+                        url: '/go-to-library', // Your Flask endpoint URL
+                        type: 'GET',
+                        success: function(response) {
+                        // This function will be called if the AJAX request is successful (status code 2xx)
+                        console.log('Success:', response);
+
+                        // Assuming your Flask endpoint returns a URL to redirect to
+                        if (response && response.redirect_url) {
+                            window.location.href = response.redirect_url;
+                        } else {
+                            //Handle cases where the response doesn't contain a redirect URL
+                            console.warn('No redirect URL received from the server.');
+                        }
+
+                        },
+                        error: function(xhr, status, error) {
+                        // This function will be called if the AJAX request fails (status code not 2xx)
+                        console.error('Error:', error);
+                        console.error('Status:', status);
+                        console.error('Response:', xhr.responseText);
+                        // Optionally display an error message to the user
+                        alert('An error occurred while trying to go to the library.');
+                        }
+                        }); 
                 });
 
             }); // End of document ready
