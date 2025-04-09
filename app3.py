@@ -16,7 +16,8 @@ from src.tutorengine.daatabase.database_library import LibraryDatabase
 import uuid 
 from flask import session
 import mysql.connector
-from flask_cors import CORS
+from flask_cors import CORS 
+import sys
 
 app = Flask(__name__)
 CORS(app)
@@ -215,7 +216,7 @@ def add_to_library_route():
 
 @app.route('/library')
 def library():
-    return render_template('library.html')
+    return render_template('data.html')
 
 
 @app.route('/go-to-library')
@@ -234,18 +235,22 @@ db = mysql.connector.connect(
 
 @app.route('/subjects/<int:user_id>')
 def get_subjects(user_id):
-    # cursor = LibraryDatabase(1).connect()
-    cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM subjects WHERE user_id = %s", (user_id,))
-    subjects = cursor.fetchall()
-    cursor.close()
-    return jsonify(subjects)
+    try:
+        cursor = db.cursor(dictionary=True)
+        # cursor = LibraryDatabase(1).connect()
+        cursor.execute("SELECT * FROM subjects WHERE user_id = %s", (user_id,))
+        subjects = cursor.fetchall()
+        cursor.close()
+        print(f"Subjects fetched for user {user_id}: {subjects}")
+        return jsonify(subjects)
+    except Exception as e:
+        return logging.info(CustomException(e,sys))
 
 @app.route('/chapters/<int:subject_id>')
 def get_chapters(subject_id):
     cursor = db.cursor(dictionary=True)
     # cursor = LibraryDatabase.connect()
-    cursor.execute("SELECT * FROM Chapters WHERE subject_id = %s", (subject_id,))
+    cursor.execute("SELECT * FROM chapters WHERE subject_id = %s", (subject_id,))
     chapters = cursor.fetchall()
     cursor.close()
     return jsonify(chapters)
@@ -254,7 +259,7 @@ def get_chapters(subject_id):
 def get_topics(chapter_id):
     cursor = db.cursor(dictionary=True)
     # cursor = LibraryDatabase.connect()
-    cursor.execute("SELECT * FROM Topics WHERE chapter_id = %s", (chapter_id,))
+    cursor.execute("SELECT * FROM topics WHERE chapter_id = %s", (chapter_id,))
     topics = cursor.fetchall()
     cursor.close()
     return jsonify(topics)
@@ -263,7 +268,7 @@ def get_topics(chapter_id):
 def get_content(topic_id):
     cursor = db.cursor(dictionary=True)
     # cursor = LibraryDatabase.connect()
-    cursor.execute("SELECT * FROM Contents WHERE topic_id = %s", (topic_id,))
+    cursor.execute("SELECT * FROM contents WHERE topic_id = %s", (topic_id,))
     result = cursor.fetchone()
     cursor.close()
     return jsonify(result if result else {"content_text": "No content available"})
