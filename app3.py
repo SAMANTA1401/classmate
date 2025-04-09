@@ -7,7 +7,7 @@ from src.exception import CustomException
 # from IPython.display import display, Markdown 
 from src.tutorengine.pipeline.master_pipeline import MasterPipeline 
 # Assuming these utils are not directly used in this route anymore
-# from src.tutorengine.utils import FieldSelectionParser 
+from src.tutorengine.utils import FieldSelectionParser 
 # from src.tutorengine.utils import ContentSelectorParser
 # Assuming BaseModel is not needed for this route logic
 # from pydantic import BaseModel 
@@ -20,19 +20,18 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
-# --- Global or Session-based Chat History (Example) ---
-# You'll need a better way to manage history per user session in a real app
-# For simplicity, using a global dict keyed by a session_id (if available) or default
+
 chat_histories = {}
 
-library = {
-
+library_data = {
     "user_id":1,
     "subject":None,
     "chapter":None,
     "topic":None,
     "content":None
 }
+
+
 
 # Generate a unique ID for this piece of content
 content_session_id = f"content_{uuid.uuid4().hex}"
@@ -54,6 +53,7 @@ def index():
 # Modified to handle GET request for EventSource and stream response
 @app.route("/get", methods=["GET"]) 
 def chat_stream():
+
     
     # Get prompt from URL query parameter 'msg'
     prompt = request.args.get("msg", "") 
@@ -84,11 +84,11 @@ def chat_stream():
             # Assuming MasterPipeline is correctly initialized
             workflow = MasterPipeline(current_chat_history).workflow()
             
-            print(f"Starting workflow stream for prompt: {prompt}") # Debug
+            # print(f"Starting workflow stream for prompt: {prompt}") # Debug
             
             # Iterate through the stream from the workflow
             for output in workflow.stream(inputs):
-                print(f"Received output chunk: {output}") # Debug raw output
+                # print(f"Received output chunk: {output}") # Debug raw output
 
                 # Process the output chunk - **ADJUST THIS LOGIC** based on actual output structure
                 # This part is crucial and depends heavily on what workflow.stream yields.
@@ -97,8 +97,6 @@ def chat_stream():
                 processed_chunk = None
                 for key, value in output.items():
                     # --- Try to extract Answer and Content ---
-                    # You NEED to adapt this logic based on the actual keys/structure
-                    # yielded by your workflow.stream
                     try:
                         # Assuming the relevant data might be nested like before
                         if isinstance(value, dict) and 'messages' in value and isinstance(value['messages'], list) and len(value['messages']) > 0:
@@ -108,34 +106,37 @@ def chat_stream():
                                 answer_value = message_data.Answer
                                 content_value = message_data.Content
                                 user_query = getattr(message_data, 'Question_or_query', prompt) # Fallback query
+                                # user_query = message_data.Question_or_query
                             elif isinstance(message_data, dict) and 'Answer' in message_data and 'Content' in message_data:
                                 answer_value = message_data.get('Answer')
                                 content_value = message_data.get('Content')
                                 user_query = message_data.get('Question_or_query', prompt) # Fallback query
                             else:
-                                continue # Skip if expected structure not found in this 
+                                print("#  continue # Skip if expected structure not found in this ")
+                                continue
                             
-                            print("message_data",message_data)
+                            # print("message_data",message_data)
 
-                            if hasattr(message_data, 'Subject') and hasattr(message_data, 'Chapter'):
-                                library["subject"] = message_data.Subject
-                                library["chapter"] = message_data.Chapter
-                                library["topic"] = message_data.Topic
+                            if hasattr(message_data, 'Subject'): # and hasattr(message_data, 'Chapter'):
+                                library_data["subject"] = message_data.Subject
+                                library_data["chapter"] = message_data.Chapter
+                                library_data["topic"] = message_data.Topic
                             elif isinstance(message_data, dict) and 'Subject' in message_data and 'Chapter' in message_data:
-                                library["subject"] = message_data.get('Subject')
-                                library["chapter"] = message_data.get('Chapter')
-                                library["topic"] = message_data.get('Topic')
+                                library_data["subject"] = message_data.get('Subject')
+                                library_data["chapter"] = message_data.get('Chapter')
+                                library_data["topic"] = message_data.get('Topic')
                             else:
                                 logging.info("Subject or Chapter not found in message_data.") # Skip if expected structure not found in this value
                             
                             if hasattr(message_data, 'Content'):
-                                library["content"] = message_data.Content
+                                library_data["content"] = message_data.Content
                             elif isinstance(message_data, dict) and 'Content' in message_data:
-                                library["content"] = message_data.get('Content')
+                                library_data["content"] = message_data.get('Content')
                             else:
-                                logging.info("Content not found in message_data.") # Skip if expected structure not found in this value
+                                 logging.info("Content not found in message_data.") # Skip if expected structure not found in this value
 
-                            print("lilbrary",library)
+                            print("lilbrary",library_data)
+
                             # --- Update Chat History (per chunk) ---
                             # Be cautious with frequent updates if history gets very large
                             current_chat_history.extend([
@@ -150,7 +151,9 @@ def chat_stream():
                                 response_chunk_dict = {"answer": answer_value, "content": content_value}
                             else:
                                 response_chunk_dict = {"answer": answer_value, "content": None}
-                            
+
+                            # --- Yield the processed chunk ---
+                            print(f"Yielding processed chunk: {response_chunk_dict}") # Debug               
                             processed_chunk = response_chunk_dict
                             break # Found and processed the relevant part, exit inner loop
 
@@ -168,11 +171,13 @@ def chat_stream():
                     yield sse_message
                     # time.sleep(0.1) # Optional small delay for demonstration
 
-            
             # --- Signal stream end (Optional but recommended) ---
             yield f"event: end-stream\ndata: {json.dumps({'message': 'Stream finished'})}\n\n"
             print("Stream finished.")
 
+
+            # library["subject"] = message_data.Subject
+            
         except Exception as e:
             logging.error(f"Error during streaming workflow: {e}")
             # Yield a final error event to the client
@@ -181,8 +186,7 @@ def chat_stream():
             # Ensure session history is saved even on error if needed
             chat_histories[session_id] = current_chat_history
         finally:
-             # Maybe save history persistently here if needed
-             pass
+            pass
 
     # Return the Response object with the generator and correct mimetype
     return Response(generate_response(), mimetype='text/event-stream')
@@ -199,10 +203,10 @@ def add_to_library_route():
     library_database = LibraryDatabase(1)
     # Add the content to the library
     success, message = library_database.add_learning_content(
-        library["subject"],
-        library["chapter"],
-        library["topic"],
-        library["content"]
+        library_data["subject"],
+        library_data["chapter"],
+        library_data["topic"],
+        library_data["content"]
     )
     # Render the playboard template
     # 4. Send Response
