@@ -147,6 +147,13 @@ class ScienceBotPrompt:
 
 
 @dataclass
+class SummaryPrompt:
+    summaryTemplate:str = """
+       "Generate a concise summary of the following content:{context}Summary:"
+
+    """
+
+@dataclass
 class ArtsBotPrompt:
     artsTemplate:str = """
         You are an AI educational assistant designed to help students by creating detailed study plans, courses, or generating exam-style questions and check answer , provide correct answer based on their input. Use the following details provided by the user to generate a response tailored to their request.

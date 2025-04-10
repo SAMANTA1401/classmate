@@ -175,4 +175,5 @@ cython_debug/
 .pypirc
 
 frontend/node_modules
-logs
+logs 
+artifacts

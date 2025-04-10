@@ -36,3 +36,6 @@ uvicorn[standard]
 # uuid # for react 
 # event-source-polyfill # for react
 # react-icons
+transformers
+PyPDF2
+pypdf
