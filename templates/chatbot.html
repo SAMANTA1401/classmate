@@ -57,6 +57,14 @@
                                     <button type="submit" id="send" class="input-group-text send_btn"><i class="fas fa-location-arrow"></i></button>
                                 </div>
                             </form>
+                            <div class="mb-4">
+                                <input
+                                    type="file"
+                                    accept=".pdf"
+                                    id="fileInput"
+                                    class="border p-2 rounded bg-white w-full"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -69,7 +77,43 @@
         <script>
             $(document).ready(function() {
                 // Keep track of the current EventSource connection
-                let currentEventSource = null; 
+                let currentEventSource = null;
+                
+                let fileUploaded = false;
+                const fileInput = document.getElementById('fileInput');
+
+                // File upload handler
+                fileInput.addEventListener('change', async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    fileInput.disabled = true;
+                  
+
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    try {
+                        const response = await fetch('http://localhost:5000/upload', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`Upload failed: ${await response.text()}`);
+                        }
+
+                       
+                        fileUploaded = true;
+                ;
+                    
+                    } catch (error) {
+                        console.error('Upload error:', error);
+                      
+                    } finally {
+                        fileInput.disabled = false;
+                    }
+                });
 
                 $("#messageArea").on("submit", function(event) {
                     event.preventDefault(); // Prevent default form submission

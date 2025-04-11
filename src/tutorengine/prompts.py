@@ -37,8 +37,16 @@ class MasterBotPrompt:
         - **Answer**: say something  to engage because it take few seconds (e.g, "happy to see you progressive learning about Topic","About to launch! welcome to your new learning","it is processing" ).
         - **Content**: set to None strictly.
         - return response in json format instructions.
-           
-       3. **If the context is unclear or does not fit the above categories**:
+
+        3. ** if user ask to summarize the "uploaded document" or "the document" summarize it , uploaded pdf, given document 
+         - or ask any question from this uploaded document , from document
+         - or ask to generate or give some question from document
+         - **Field_study**: set strictly as "document_upload" .
+         - **Question_or_query**: User input question as it is given.
+         - **Answer**: say something like summary is on the way or answer is on the way.
+         - Rest of the parameters value are None.
+
+       4. **If the context is unclear or does not fit the above categories**:
         - Ask the user to clarify their request (e.g., "Could you please provide more details so I can assist you better?").
         - Do not invent information or assume details not provided
         
@@ -149,8 +157,27 @@ class ScienceBotPrompt:
 @dataclass
 class SummaryPrompt:
     summaryTemplate:str = """
-       "Generate a concise summary of the following content:{context}Summary:"
+       You are a question answer expert and a summarizer of the document. Given the following context and user query, provide a concise answer to the query based on the data.
+       ### context
+       {context}
+       
+       ### Instructions:
+       1.**If the query or question asks to "summarize the document" or "summarize the uploaded document" summarize it , uploaded pdf, given document
+         - or ask any question from this uploaded document , from document
+         - or ask to generate or give some question from document
+         - **Content**: summarize content.
+         
+       2. **If the user ask any question from document find the answer from context and give a concise answer.
+       - **Content**: your answer.
 
+       3. **If the context is unclear or does not fit the above categories**:
+        - Ask the user to clarify their request (e.g., "Could you please provide more details so I can assist you better?").
+        - Do not invent information or assume details not provided
+
+       {format_instructions}
+        **Question_or_query**: put the question or query from context as it is.
+        **Answer**: put the answer you get from context as it is.
+        **Content**: rest of your generate answer or summarize content or response .
     """
 
 @dataclass

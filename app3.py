@@ -2,22 +2,19 @@ import json
 import time # Just for demonstration or potential delays
 from flask import Flask, render_template, request, Response, jsonify 
 from src.logger import logging
-from src.exception import CustomException
-# Assuming IPython.display is not needed for Flask app logic
-# from IPython.display import display, Markdown 
+from src.exception import CustomException 
 from src.tutorengine.pipeline.master_pipeline import MasterPipeline 
 # Assuming these utils are not directly used in this route anymore
 from src.tutorengine.utils import FieldSelectionParser 
-# from src.tutorengine.utils import ContentSelectorParser
-# Assuming BaseModel is not needed for this route logic
-# from pydantic import BaseModel 
-# from src.tutorengine.daatabase.db_config import DBConfig
-from src.tutorengine.daatabase.database_library import LibraryDatabase
+from src.tutorengine.daatabase.database_library import LibraryDatabase 
+from werkzeug.utils import secure_filename
 import uuid 
 from flask import session
 import mysql.connector
 from flask_cors import CORS 
 import sys
+import  os 
+from src.tutorengine.component.summary_bot import SummaryBot
 
 app = Flask(__name__)
 CORS(app)
@@ -196,6 +193,41 @@ def chat_stream():
 # Remove the old '/get' POST route if it's no longer needed
 # Remove the commented out '/playboard' route unless you implement it
 
+# Temporary file storage
+UPLOAD_FOLDER = 'uploads'
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+@app.route("/upload", methods=['POST'])
+def upload_document():
+    try:
+        logging.info("Received upload request")
+        if 'file' not in request.files:
+            return jsonify({"error": "No file provided"}), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({"error": "No file selected"}), 400
+        else:
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+            
+            logging.info("document ready to process")
+
+            SummaryBot(filename).vector_store()
+
+            logging.info("Document uploaded and processed successfully")
+            
+            return jsonify({"message": "Document uploaded successfully"})
+
+    except Exception as e:
+        logging.error(f"Upload error: {str(e)}")
+        return {"error": str(e)}, 500
+
+
+
 
 @app.route('/add_to_library', methods=['POST']) 
 def add_to_library_route():
@@ -216,7 +248,7 @@ def add_to_library_route():
 
 @app.route('/library')
 def library():
-    return render_template('data.html')
+    return render_template('library.html')
 
 
 @app.route('/go-to-library')
