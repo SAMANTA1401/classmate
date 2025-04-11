@@ -5,7 +5,8 @@ from src.tutorengine.component.master_bot_router import MasterBotRouter
 from src.tutorengine.component.science_bot import ScienceBot
 from src.logger import logging
 from src.exception import CustomException
-import sys
+import sys 
+from src.tutorengine.component.summary_bot import SummaryBot
 
 
 
@@ -13,8 +14,9 @@ import sys
 state: AgentState = {"messages": [BaseMessage("Hello!")]}
 
 class MasterPipeline:
-    def __init__(self, chat_history:list):
+    def __init__(self, chat_history:list, filename:str):
         self.chat_history = chat_history
+        self.filename = filename
 
     def router(self,state):
         logging.info("Router initiate")
@@ -25,6 +27,9 @@ class MasterPipeline:
             # if "Field_study='science'" in last_message:
                 logging.info("Router is routing to science bot")
                 return "Science"
+            elif last_message.Field_study == 'document_upload':
+                logging.info("Router is routing to summary bot")
+                return "Summary"
             else:
                 return "end"
         except Exception as e:
@@ -39,6 +44,7 @@ class MasterPipeline:
 
             workflow_master.add_node("masterbot",MasterBotRouter(chat_history=self.chat_history).route) ### Adding the master bot
             workflow_master.add_node("sciencebot", ScienceBot().route) ### Adding the science bot
+            workflow_master.add_node("summarybot", SummaryBot(filename=self.filename).retriever)
 
             workflow_master.set_entry_point("masterbot")
 
@@ -47,11 +53,13 @@ class MasterPipeline:
                 self.router,
                 {
                     "Science": "sciencebot",
+                    "Summary": "summarybot",
                     "end" : END
                 }
             )
 
             workflow_master.add_edge("sciencebot", END)
+            workflow_master.add_edge("summarybot", END)
             app = workflow_master.compile()
 
             logging.info("Workflow compiled successfully")
@@ -62,9 +70,9 @@ class MasterPipeline:
             logging.info(CustomException(e, sys))
 
 if __name__ == "__main__":
-
+    filename = "khanra.pdf"
     chat_history = [f"UserMessage:my name is Shubhankar Samnata, age is 20, study in class 10" f"SystemMessage: hi! I am your classmate"]
-    app = MasterPipeline(chat_history).workflow()
+    app = MasterPipeline(chat_history,filename).workflow()
 
     inputs = {"messages": ["Tell me about quantum entanglement"]}
 

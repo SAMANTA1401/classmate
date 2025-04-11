@@ -41,7 +41,7 @@ class MasterBotPrompt:
         3. ** if user ask to summarize the "uploaded document" or "the document" summarize it , uploaded pdf, given document 
          - or ask any question from this uploaded document , from document
          - or ask to generate or give some question from document
-         - **Field_study**: set strictly as "document_upload" .
+         - **Field_study**: set strictly value as document_upload .
          - **Question_or_query**: User input question as it is given.
          - **Answer**: say something like summary is on the way or answer is on the way.
          - Rest of the parameters value are None.
