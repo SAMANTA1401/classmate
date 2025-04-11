@@ -13,7 +13,7 @@ from langchain_groq import ChatGroq
 from src.tutorengine.artifact_config import SummaryPath
 import os 
 from dotenv import load_dotenv 
-from src.tutorengine.utils import ContentSelectorParser
+from src.tutorengine.utils import SummaryParser
 from langchain.output_parsers import  PydanticOutputParser 
 
 load_dotenv()
@@ -101,7 +101,7 @@ class SummaryBot:
 
             # Combine retrieved content
             # context = "\n".join([doc.page_content for doc in docs])
-            parser4 = PydanticOutputParser(pydantic_object=ContentSelectorParser)
+            parser4 = PydanticOutputParser(pydantic_object=SummaryParser)
             # Set up prompt and chain
             prompt = PromptTemplate(
                 template=SummaryPrompt.summaryTemplate, 
@@ -120,10 +120,13 @@ class SummaryBot:
 
             response = chain.invoke({"query": query, "format_instructions": parser4.get_format_instructions() })
 
-            final_response = ContentSelectorParser(
+            final_response = SummaryParser(
                 Question_or_query=query.Question_or_query,
                 Answer=response.Answer,
-                Content = response.Content
+                Content = response.Content,
+                Subject=response.Subject,
+                Chapter=response.Chapter,
+                Topic=response.Topic
             )
 
             return {"messages": [final_response]}

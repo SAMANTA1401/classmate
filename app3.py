@@ -29,7 +29,7 @@ library_data = {
     "content":None
 }
 
-
+file_name = [None]
 
 # Generate a unique ID for this piece of content
 content_session_id = f"content_{uuid.uuid4().hex}"
@@ -80,7 +80,7 @@ def chat_stream():
     def generate_response():
         try:
             # Assuming MasterPipeline is correctly initialized
-            workflow = MasterPipeline(current_chat_history).workflow()
+            workflow = MasterPipeline(current_chat_history, filename=file_name[0]).workflow()
             
             # print(f"Starting workflow stream for prompt: {prompt}") # Debug
             
@@ -213,7 +213,9 @@ def upload_document():
             filename = secure_filename(file.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(file_path)
-            
+
+            file_name[0] = str(filename)
+
             logging.info("document ready to process")
 
             SummaryBot(filename).vector_store()

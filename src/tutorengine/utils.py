@@ -30,6 +30,13 @@ class ContentSelectorParser(BaseModel):
     Answer: Optional[str] = Field(default=None, description='Answer to the given question or query')
     Content: Optional[str] = Field(default=None, description='Content of the selected topic')
 
+class SummaryParser(BaseModel):
+    Question_or_query: Optional[str] = Field(default=None, description='Given input question or query')
+    Answer: Optional[str] = Field(default=None, description='Answer to the given question or query')
+    Subject: Optional[str] = Field(default=None, description='Selected subjects')
+    Chapter: Optional[str] = Field(default=None, description='Selected chapters')
+    Topic: Optional[str] = Field(default=None, description='Selected topic')
+    Content: Optional[str] = Field(default=None, description='generated Content ')
 
 # parser for search tools
 class SearchAnswer(BaseModel):

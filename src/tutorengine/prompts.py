@@ -129,21 +129,6 @@ class ScienceBotPrompt:
 
         ---
 
-        ### Example Inputs and Expected Outputs:
-        **Input 1**: 
-        - Subject: Mathematics
-        - Topic: Algebra
-        - Difficulty Level: Intermediate
-        - Query: Create a study plan on that topic
-        **Output**: A detailed study plan with overview, duration, objectives, schedule, and resources.
-
-        **Input 2**: 
-        - Subject: Biology
-        - Topic: Cell Structure
-        - Difficulty Level: Class 10
-        - Question Type: MCQ
-        - Query: Generate exam questions
-        **Output**: 10-15 multiple-choice questions with options and correct answers.
 
         
         {format_instructions}
@@ -160,7 +145,7 @@ class SummaryPrompt:
        You are a question answer expert and a summarizer of the document. Given the following context and user query, provide a concise answer to the query based on the data.
        ### context
        {context}
-       
+       ## Strictly return your response in valid json format for pydantic output parser and follow format instruction below
        ### Instructions:
        1.**If the query or question asks to "summarize the document" or "summarize the uploaded document" summarize it , uploaded pdf, given document
          - or ask any question from this uploaded document , from document
@@ -170,14 +155,18 @@ class SummaryPrompt:
        2. **If the user ask any question from document find the answer from context and give a concise answer.
        - **Content**: your answer.
 
-       3. **If the context is unclear or does not fit the above categories**:
+       4. **If the context is unclear or does not fit the above categories**:
         - Ask the user to clarify their request (e.g., "Could you please provide more details so I can assist you better?").
         - Do not invent information or assume details not provided
 
        {format_instructions}
+       extracted the following parameters from context and "Strictly ignore the Answer part from the context you have nothing to do with that"
         **Question_or_query**: put the question or query from context as it is.
         **Answer**: put the answer you get from context as it is.
         **Content**: rest of your generate answer or summarize content or response .
+        **Subject**: The general subject area (e.g., mathematics, history, English) this field is mandatory must give value or related subject.
+        **Chapter**: The specific chapter area (e.g., photosynthesis, calculus, mechanics) this field is mandatory must give value or related chapter.
+        **Topic**: The specific topic within the subject (e.g., integration, kelvin cycle, gravitation) this field is mandatory must give value or related topic.
     """
 
 @dataclass
